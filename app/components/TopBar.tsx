@@ -1,15 +1,16 @@
 import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import ThemeToggleButton from "./ThemeToggleButton";
 
 interface TopBarProps {
   drawerWidth: number;
   handleDrawerToggle: () => void;
+  title?: string;
 }
 
 export default function TopBar({
   drawerWidth,
   handleDrawerToggle,
+  title = "Dashboard",
 }: TopBarProps) {
   return (
     <AppBar
@@ -30,9 +31,8 @@ export default function TopBar({
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-          Dashboard
+          {title}
         </Typography>
-        <ThemeToggleButton />
       </Toolbar>
     </AppBar>
   );

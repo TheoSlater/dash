@@ -10,30 +10,29 @@ import {
   Typography,
   Alert,
 } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    if (error) setError(error.message);
+    if (error) {
+      setError(error.message);
+    } else {
+      router.push("/");
+    }
   };
 
-  const handleLoginAnonymously = async () => {
-    try {
-      const { error } = await supabase.auth.signInAnonymously();
-      if (error) setError(error.message);
-    } catch (err) {
-      console.error("Error during anonymous login:", err);
-      setError(
-        "Anonymous authentication is not enabled. Please enable it in your Supabase dashboard."
-      );
-    }
+  const handleDemoLogin = () => {
+    localStorage.setItem("demoMode", "true");
+    router.push("/");
   };
 
   return (
@@ -80,10 +79,10 @@ const Login = () => {
           variant="outlined"
           color="primary"
           fullWidth
-          onClick={handleLoginAnonymously}
+          onClick={handleDemoLogin}
           sx={{ mt: 1 }}
         >
-          Continue as Guest
+          Try Demo Mode
         </Button>
         <Typography variant="body2" sx={{ mt: 2 }}>
           Don&apos;t have an account?{" "}

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Drawer,
   Box,
@@ -11,6 +12,21 @@ import {
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { supabase } from "../utils/supabase";
+
+const handleLogout = async () => {
+  if (localStorage.getItem("demoMode") === "true") {
+    localStorage.removeItem("demoMode");
+    window.location.href = "/login";
+    return;
+  }
+
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error("Error logging out:", error);
+  }
+};
 
 interface SidebarProps {
   drawerWidth: number;
@@ -23,25 +39,47 @@ export default function Sidebar({
   mobileOpen,
   handleDrawerToggle,
 }: SidebarProps) {
+  const menuItems = [
+    { text: "Dashboard", icon: <DashboardIcon />, href: "/" },
+    { text: "Settings", icon: <SettingsIcon />, href: "/settings" },
+  ];
+
   const drawer = (
-    <div>
-      <Toolbar>
-        <Typography variant="h6" noWrap>
-          My Dashboard
-        </Typography>
-      </Toolbar>
-      <Divider />
-      <List>
-        {[
-          { text: "Dashboard", icon: <DashboardIcon /> },
-          { text: "Settings", icon: <SettingsIcon /> },
-        ].map((item) => (
-          <ListItemButton key={item.text}>
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
+    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      <div>
+        <Toolbar>
+          <Typography variant="h6" noWrap>
+            My Dashboard
+          </Typography>
+        </Toolbar>
+        <Divider />
+        <List>
+          {menuItems.map((item) => (
+            <Link
+              key={item.text}
+              href={item.href}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <ListItemButton>
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItemButton>
+            </Link>
+          ))}
+        </List>
+      </div>
+
+      <div style={{ marginTop: "auto" }}>
+        <Divider />
+        <List>
+          <ListItemButton onClick={handleLogout}>
+            <ListItemIcon>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
           </ListItemButton>
-        ))}
-      </List>
+        </List>
+      </div>
     </div>
   );
 

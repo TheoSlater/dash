@@ -8,20 +8,32 @@ import {
 } from "react";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "../utils/supabase";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface AuthContextProps {
   user: User | null;
   setUser: (user: User | null) => void;
+  isDemo: boolean;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isDemo, setIsDemo] = useState(
+    () => localStorage.getItem("demoMode") === "true"
+  );
+  const router = useRouter();
 
   useEffect(() => {
     const fetchSession = async () => {
+      if (localStorage.getItem("demoMode") === "true") {
+        setIsDemo(true);
+        setUser({ email: "demo@example.com" } as User);
+        return;
+      }
+
+      setIsDemo(false);
       const { data } = await supabase.auth.getSession();
       setUser(data.session?.user ?? null);
     };
@@ -29,20 +41,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     fetchSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
+        if (localStorage.getItem("demoMode") === "true") {
+          setIsDemo(true);
+          return;
+        }
+
+        setIsDemo(false);
         setUser(session?.user ?? null);
-        if (event === "SIGNED_IN") redirect("/");
-        if (event === "SIGNED_OUT") redirect("/login");
+
+        if (event === "SIGNED_IN") {
+          router.push("/");
+        }
+        if (event === "SIGNED_OUT") {
+          localStorage.removeItem("demoMode");
+          router.push("/login");
+        }
       }
     );
 
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [router]);
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, isDemo }}>
       {children}
     </AuthContext.Provider>
   );
