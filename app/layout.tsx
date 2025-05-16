@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { CustomThemeProvider } from "./theme/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
+import MobileBlocker from "./components/MobileBlocker";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -14,10 +15,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <AuthProvider>
-          <CustomThemeProvider>{children}</CustomThemeProvider>
+          <CustomThemeProvider>
+            <MobileBlocker />
+            {children}
+          </CustomThemeProvider>
         </AuthProvider>
       </body>
     </html>

@@ -1,3 +1,5 @@
+"use client";
+
 export const getDesignTokens = (mode: "light" | "dark") => ({
   palette: {
     mode,
@@ -18,6 +20,7 @@ export const getDesignTokens = (mode: "light" | "dark") => ({
             main: "#90caf9",
           },
           background: {
+            default: "#121212",
             paper: "#1e1e1e",
           },
         }),

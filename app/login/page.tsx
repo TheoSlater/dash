@@ -30,11 +30,6 @@ const Login = () => {
     }
   };
 
-  const handleDemoLogin = () => {
-    localStorage.setItem("demoMode", "true");
-    router.push("/");
-  };
-
   return (
     <Container maxWidth="xs">
       <Box
@@ -74,15 +69,6 @@ const Login = () => {
           sx={{ mt: 2 }}
         >
           Login
-        </Button>
-        <Button
-          variant="outlined"
-          color="primary"
-          fullWidth
-          onClick={handleDemoLogin}
-          sx={{ mt: 1 }}
-        >
-          Try Demo Mode
         </Button>
         <Typography variant="body2" sx={{ mt: 2 }}>
           Don&apos;t have an account?{" "}

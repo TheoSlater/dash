@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import { useColorMode } from "../theme/ThemeContext";
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
 import Sidebar from "../components/Sidebar";
 import TopBar from "../components/TopBar";
 
@@ -23,7 +22,6 @@ const drawerWidth = 240;
 
 export default function Settings() {
   const { mode, setMode } = useColorMode();
-  const { isDemo } = useAuth();
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -88,23 +86,11 @@ export default function Settings() {
               control={
                 <Switch
                   checked={emailNotifications}
-                  onChange={(e) => {
-                    if (isDemo) return;
-                    setEmailNotifications(e.target.checked);
-                  }}
+                  onChange={(e) => setEmailNotifications(e.target.checked)}
                 />
               }
               label="Email Notifications"
             />
-            {isDemo && (
-              <Typography
-                variant="caption"
-                color="warning.main"
-                display="block"
-              >
-                Notification settings cannot be changed in demo mode
-              </Typography>
-            )}
           </CardContent>
         </Card>
       </Box>

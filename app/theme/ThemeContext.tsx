@@ -1,5 +1,11 @@
 "use client";
-import React, { createContext, useMemo, useState, useContext } from "react";
+import React, {
+  createContext,
+  useMemo,
+  useState,
+  useContext,
+  useEffect,
+} from "react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { getDesignTokens } from "./theme";
@@ -23,12 +29,17 @@ export const useColorMode = () => useContext(ColorModeContext);
 export const CustomThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [mode, setMode] = useState<ThemeMode>(() => {
-    if (typeof window !== "undefined") {
-      return (localStorage.getItem("themeMode") as ThemeMode) || "system";
+  const [mode, setMode] = useState<ThemeMode>("system");
+  const [mounted, setMounted] = useState(false);
+
+  // Initialize theme mode on client-side only
+  useEffect(() => {
+    setMounted(true);
+    const storedMode = localStorage.getItem("themeMode") as ThemeMode;
+    if (storedMode) {
+      setMode(storedMode);
     }
-    return "system";
-  });
+  }, []);
 
   const colorMode = useMemo(
     () => ({
@@ -62,11 +73,14 @@ export const CustomThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     () => createTheme(getDesignTokens(actualMode)),
     [actualMode]
   );
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
+        <CssBaseline enableColorScheme />
         {children}
       </ThemeProvider>
     </ColorModeContext.Provider>

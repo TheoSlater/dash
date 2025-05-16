@@ -1,5 +1,6 @@
 import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import ThemeToggleButton from "./ThemeToggleButton";
 
 interface TopBarProps {
   drawerWidth: number;
@@ -20,6 +21,7 @@ export default function TopBar({
         ml: { sm: `${drawerWidth}px` },
       }}
     >
+      {" "}
       <Toolbar>
         <IconButton
           color="inherit"
@@ -33,6 +35,7 @@ export default function TopBar({
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
           {title}
         </Typography>
+        <ThemeToggleButton />
       </Toolbar>
     </AppBar>
   );

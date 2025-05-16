@@ -16,12 +16,6 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { supabase } from "../utils/supabase";
 
 const handleLogout = async () => {
-  if (localStorage.getItem("demoMode") === "true") {
-    localStorage.removeItem("demoMode");
-    window.location.href = "/login";
-    return;
-  }
-
   const { error } = await supabase.auth.signOut();
   if (error) {
     console.error("Error logging out:", error);
@@ -41,6 +35,7 @@ export default function Sidebar({
 }: SidebarProps) {
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, href: "/" },
+    { text: "Playground", icon: null, href: "/playground" },
     { text: "Settings", icon: <SettingsIcon />, href: "/settings" },
   ];
 
