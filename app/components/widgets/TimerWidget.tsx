@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -11,6 +11,7 @@ import { useTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import { Delete } from "@mui/icons-material";
 import { TimerConfig } from "../../components/TimerSetupDialog";
+import { useTimer } from "../../hooks/useTimer";
 
 interface TimerWidgetProps {
   config: TimerConfig;
@@ -26,8 +27,7 @@ export default function TimerWidget({
   const theme = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState(0);
-  const [timeLeft, setTimeLeft] = useState<number>(0);
-  const [totalDuration, setTotalDuration] = useState<number>(0);
+  const { timeLeft, progress, formattedTime } = useTimer(config);
 
   // Calculate container size
   useEffect(() => {
@@ -50,61 +50,6 @@ export default function TimerWidget({
     return () => observer.disconnect();
   }, []);
 
-  // Initialize timer
-  useEffect(() => {
-    if (config.type === "timer" && config.duration) {
-      setTimeLeft(config.duration * 60); // Convert minutes to seconds
-      setTotalDuration(config.duration * 60);
-    } else if (config.type === "countdown" && config.targetDate) {
-      const now = new Date().getTime();
-      const target = new Date(config.targetDate).getTime();
-      setTimeLeft(Math.max(0, Math.floor((target - now) / 1000)));
-      setTotalDuration(Math.floor((target - now) / 1000));
-    }
-  }, [config]);
-
-  // Timer logic
-  useEffect(() => {
-    if (timeLeft <= 0) return;
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 0) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [timeLeft]);
-
-  // Format time display for countdown
-  const formattedTime = useMemo(() => {
-    if (timeLeft <= 0) return "Done!";
-
-    const days = Math.floor(timeLeft / 86400);
-    const hours = Math.floor((timeLeft % 86400) / 3600);
-    const minutes = Math.floor((timeLeft % 3600) / 60);
-    const seconds = timeLeft % 60;
-
-    if (config.type === "countdown" && days > 0) {
-      return `${days}d ${hours}h`;
-    }
-    if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
-        .toString()
-        .padStart(2, "0")}`;
-    }
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  }, [timeLeft, config.type]);
-
-  // Calculate progress percentage
-  const progress = useMemo(() => {
-    return ((totalDuration - timeLeft) / totalDuration) * 100;
-  }, [timeLeft, totalDuration]);
-
   const handleButtonClick = (e: React.MouseEvent, action: () => void) => {
     e.stopPropagation();
     e.preventDefault();
@@ -125,15 +70,15 @@ export default function TimerWidget({
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <IconButton 
-          size="small" 
-          onClick={(e) => handleButtonClick(e, onEdit)} 
+        <IconButton
+          size="small"
+          onClick={(e) => handleButtonClick(e, onEdit)}
           sx={{ mr: 1 }}
         >
           <EditIcon fontSize="small" />
         </IconButton>
-        <IconButton 
-          size="small" 
+        <IconButton
+          size="small"
           onClick={(e) => handleButtonClick(e, onDelete)}
         >
           <Delete fontSize="small" />

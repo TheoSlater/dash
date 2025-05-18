@@ -17,7 +17,10 @@ interface Layouts {
 export default function Playground() {
   const [mounted, setMounted] = useState(false);
   const [setupOpen, setSetupOpen] = useState(false);
-  const [editingWidget, setEditingWidget] = useState<{ index: number; config: TimerConfig } | null>(null);
+  const [editingWidget, setEditingWidget] = useState<{
+    index: number;
+    config: TimerConfig;
+  } | null>(null);
   const [layouts, setLayouts] = useState<Layouts>({
     lg: [],
   });

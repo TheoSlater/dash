@@ -44,8 +44,13 @@ export default function TimerSetupDialog({
       setLabel(initialConfig.label || "");
       if (initialConfig.type === "timer") {
         setDuration(String(initialConfig.duration || ""));
-      } else if (initialConfig.type === "countdown" && initialConfig.targetDate) {
-        setTargetDate(new Date(initialConfig.targetDate).toISOString().slice(0, 16));
+      } else if (
+        initialConfig.type === "countdown" &&
+        initialConfig.targetDate
+      ) {
+        setTargetDate(
+          new Date(initialConfig.targetDate).toISOString().slice(0, 16)
+        );
       }
     } else {
       // Reset form when adding new widget
